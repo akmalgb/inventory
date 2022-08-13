@@ -13,4 +13,14 @@ class Product extends Model
     {
         return $this->hasOne(Stock::class);
     }
+
+    public function Supplyings()
+    {
+        return $this->hasMany(Supplying::class);
+    }
+
+    public function ProductOrders()
+    {
+        return $this->hasMany(ProductOrder::class);
+    }
 }
