@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         RoleTableSeeder::class,
         UserTableSeeder::class,
         ProductTableSeeder::class,
+        StockTableSeeder::class,
     ]);
     }
 }
