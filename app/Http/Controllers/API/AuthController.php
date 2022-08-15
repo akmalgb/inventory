@@ -5,26 +5,25 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+        if (!Auth::attempt($request->only('email', 'password')))
+        {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
 
+        $user = User::where('email', $request['email'])->firstOrFail();
+
         return response()->json([
-            'data' => $user,
+            'data' => new UserResource($user),
             'token' => $user->createToken('myapptoken')->plainTextToken,
         ]);
     }
@@ -35,5 +34,9 @@ class AuthController extends Controller
         return [
             'message' => 'you are logged out!'
         ];
+    }
+
+    public function profile() {
+        return response()->json(auth()->user());
     }
 }
